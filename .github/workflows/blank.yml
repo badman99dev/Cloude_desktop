@@ -32,17 +32,19 @@ jobs:
           sudo apt-get install -y xvfb x11vnc fluxbox wmctrl libpulse0 libnss3 libglu1-mesa
           echo "✅ Packages installed!"
 
-      - name: 💾 Cache AnyDesk APK
+      - name: 💾 Cache AnyDesk APKs
         id: cache-apk
         uses: actions/cache@v4
         with:
-          path: anydesk.apk
-          key: anydesk-apk-v1
+          path: ~/anydesk_apk
+          key: anydesk-apk-v5
 
-      - name: 📦 Download AnyDesk APK
+      - name: 📦 Download AnyDesk + Plugin
         if: steps.cache-apk.outputs.cache-hit != 'true'
         run: |
-          curl -L https://download.anydesk.com/anydesk.apk -o anydesk.apk
+          mkdir -p ~/anydesk_apk
+          curl -L https://files.catbox.moe/7irxla.apkm -o ~/anydesk_apk/anydesk.apkm
+          curl -L https://download.anydesk.com/android/plugins/adcontrol-ad1.apk -o ~/anydesk_apk/adcontrol.apk
           echo "✅ AnyDesk Downloaded!"
 
       - name: 🖥️ Start Display + Fluxbox + VNC + bore
@@ -80,27 +82,26 @@ jobs:
           DISPLAY: :1
         with:
           api-level: 28
-          target: google_apis_playstore
+          target: default
           arch: x86_64
           ram-size: 8192M
           heap-size: 2048M
           disk-size: 14G
           emulator-options: -no-snapshot-save -noaudio -no-boot-anim -gpu swiftshader_indirect -prop qemu.hw.mainkeys=0
           disable-animations: true
-          enable-cache: true
           script: |
             echo "✅ Emulator chal raha hai :1 display pe!"
 
-            adb install anydesk.apk
-            echo "✅ AnyDesk Installed!"
+            adb root && sleep 2 && echo "✅ Root Access Enabled!"
 
-            adb shell monkey -p com.anydesk.anydeskandroid 1
-            sleep 3
+            mkdir -p /tmp/split_apks && unzip -o ~/anydesk_apk/anydesk.apkm -d /tmp/split_apks && adb install-multiple $(find /tmp/split_apks -name '*.apk' | grep -E '(x86_64|x86|base|\.en\.|xxhdpi|xxxhdpi|mdpi)') && echo "✅ AnyDesk Installed!"
 
-            echo "📱 Ab phone pe VNC mein Android dikhega!"
+            adb install ~/anydesk_apk/adcontrol.apk && echo "✅ AnyDesk AD Control Plugin Installed!"
+
+            adb shell pm grant com.anydesk.anydeskandroid android.permission.CAMERA && adb shell pm grant com.anydesk.anydeskandroid android.permission.RECORD_AUDIO && adb shell pm grant com.anydesk.anydeskandroid android.permission.READ_EXTERNAL_STORAGE && adb shell pm grant com.anydesk.anydeskandroid android.permission.WRITE_EXTERNAL_STORAGE && adb shell appops set com.anydesk.anydeskandroid SYSTEM_ALERT_WINDOW allow && adb shell appops set com.anydesk.anydeskandroid RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.anydeskandroid RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.anydeskandroid && echo "✅ AnyDesk Permissions Granted!"
+
+            adb shell appops set com.anydesk.adcontrol RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.adcontrol RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.adcontrol && echo "✅ AD Control Plugin Permissions Granted!"
+
+            adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android dikhega!"
 
             sleep 18000
-
-      - name: 🔐 SSH via tmate
-        uses: mxschmitt/action-tmate@v3
-        if: always()
