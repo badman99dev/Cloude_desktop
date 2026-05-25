@@ -32,7 +32,15 @@ jobs:
           sudo apt-get install -y xvfb x11vnc fluxbox wmctrl libpulse0 libnss3 libglu1-mesa
           echo "✅ Packages installed!"
 
+      - name: 💾 Cache AnyDesk APK
+        id: cache-apk
+        uses: actions/cache@v4
+        with:
+          path: anydesk.apk
+          key: anydesk-apk-v1
+
       - name: 📦 Download AnyDesk APK
+        if: steps.cache-apk.outputs.cache-hit != 'true'
         run: |
           curl -L https://download.anydesk.com/anydesk.apk -o anydesk.apk
           echo "✅ AnyDesk Downloaded!"
@@ -78,6 +86,7 @@ jobs:
           heap-size: 1024M
           emulator-options: -no-snapshot-save -noaudio -no-boot-anim -gpu swiftshader_indirect -prop qemu.hw.mainkeys=0
           disable-animations: true
+          enable-cache: true
           script: |
             echo "✅ Emulator chal raha hai :1 display pe!"
 
