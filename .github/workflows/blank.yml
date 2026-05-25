@@ -32,10 +32,10 @@ jobs:
           sudo apt-get install -y xvfb x11vnc fluxbox wmctrl libpulse0 libnss3 libglu1-mesa
           echo "✅ Packages installed!"
 
-      - name: 📦 Download F-Droid APK
+      - name: 📦 Download AnyDesk APK
         run: |
-          curl -L https://f-droid.org/F-Droid.apk -o fdroid.apk
-          echo "✅ F-Droid Downloaded!"
+          curl -L https://download.anydesk.com/anydesk.apk -o anydesk.apk
+          echo "✅ AnyDesk Downloaded!"
 
       - name: 🖥️ Start Display + Fluxbox + VNC + bore
         run: |
@@ -81,10 +81,10 @@ jobs:
           script: |
             echo "✅ Emulator chal raha hai :1 display pe!"
 
-            adb install fdroid.apk
-            echo "✅ F-Droid Installed!"
+            adb install anydesk.apk
+            echo "✅ AnyDesk Installed!"
 
-            adb shell monkey -p org.fdroid.fdroid 1
+            adb shell monkey -p com.anydesk.anydeskandroid 1
             sleep 3
 
             echo "📱 Ab phone pe VNC mein Android dikhega!"
