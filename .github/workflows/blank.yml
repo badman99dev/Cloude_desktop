@@ -52,11 +52,15 @@ jobs:
           mkdir -p ~/.vnc
           echo "" | vncpasswd -f > ~/.vnc/passwd
           chmod 600 ~/.vnc/passwd
+          cat > ~/.vnc/xstartup << 'EOF'
+          #!/bin/sh
+          unset SESSION_MANAGER
+          unset DBUS_SESSION_BUS_ADDRESS
+          fluxbox &
+          EOF
+          chmod +x ~/.vnc/xstartup
           vncserver :1 -geometry 1920x1080 -depth 24 -localhost no &
           sleep 3
-          export DISPLAY=:1
-          fluxbox &
-          sleep 2
           echo "✅ Xvnc + Fluxbox Ready!"
 
       - name: 📱 Android Emulator — Boot First!
