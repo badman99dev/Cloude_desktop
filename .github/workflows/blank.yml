@@ -80,7 +80,10 @@ jobs:
             echo "✅ Emulator booted successfully!"
 
             echo "🔧 Starting bore..."
-            curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin && chmod +x /usr/local/bin/bore && bore local 5901 --to bore.pub 2>&1 | tee /tmp/bore.log & sleep 5 && echo "✅ bore Started!"
+            curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin && chmod +x /usr/local/bin/bore
+
+            start_bore() { pkill -f "bore local" 2>/dev/null; sleep 1; bore local 5901 --to bore.pub 2>&1 | tee /tmp/bore.log & sleep 5; BORE_PORT=$(grep -oP 'remote_port=\K\d+' /tmp/bore.log | tail -1); echo "🔄 bore Active! Port: $BORE_PORT | VNC: bore.pub:$BORE_PORT"; }
+            start_bore
 
             echo "============================================"
             echo "📱 PHONE PE YEH KARO:"
@@ -104,4 +107,5 @@ jobs:
             echo "🚀 Launching AnyDesk..."
             adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android + AnyDesk dikhega!"
 
-            sleep 18000
+            echo "🔄 bore watchdog shuru..."
+            while true; do sleep 60; if ! ss -tlnp | grep -q ':5901'; then echo "⚠️ bore disconnected! Reconnecting..."; start_bore; else BORE_PORT=$(grep -oP 'remote_port=\K\d+' /tmp/bore.log | tail -1); echo "✅ bore alive | VNC: bore.pub:$BORE_PORT"; fi; done &
