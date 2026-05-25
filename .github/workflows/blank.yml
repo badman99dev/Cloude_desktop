@@ -83,7 +83,7 @@ jobs:
           target: google_apis_playstore
           arch: x86_64
           ram-size: 8192M
-          heap-size: 1024M
+          heap-size: 2048M
           disk-size: 14G
           emulator-options: -no-snapshot-save -noaudio -no-boot-anim -gpu swiftshader_indirect -prop qemu.hw.mainkeys=0
           disable-animations: true
