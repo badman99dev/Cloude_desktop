@@ -82,7 +82,7 @@ jobs:
           DISPLAY: :1
         with:
           api-level: 28
-          target: default
+          target: google_apis
           arch: x86_64
           ram-size: 8192M
           heap-size: 2048M
@@ -91,8 +91,6 @@ jobs:
           disable-animations: true
           script: |
             echo "✅ Emulator chal raha hai :1 display pe!"
-
-            adb root && sleep 2 && echo "✅ Root Access Enabled!"
 
             mkdir -p /tmp/split_apks && unzip -o ~/anydesk_apk/anydesk.apkm -d /tmp/split_apks && adb install-multiple $(find /tmp/split_apks -name '*.apk' | grep -E '(x86_64|x86|base|\.en\.|xxhdpi|xxxhdpi|mdpi)') && echo "✅ AnyDesk Installed!"
 
