@@ -97,8 +97,6 @@ jobs:
 
             adb shell pm grant com.anydesk.anydeskandroid android.permission.CAMERA && adb shell pm grant com.anydesk.anydeskandroid android.permission.RECORD_AUDIO && adb shell pm grant com.anydesk.anydeskandroid android.permission.READ_EXTERNAL_STORAGE && adb shell pm grant com.anydesk.anydeskandroid android.permission.WRITE_EXTERNAL_STORAGE && adb shell appops set com.anydesk.anydeskandroid SYSTEM_ALERT_WINDOW allow && adb shell appops set com.anydesk.anydeskandroid RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.anydeskandroid RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.anydeskandroid && echo "✅ AnyDesk Permissions Granted!"
 
-            adb shell appops set com.anydesk.adcontrol RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.adcontrol RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.adcontrol && echo "✅ AD Control Plugin Permissions Granted!"
-
             adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android dikhega!"
 
             sleep 18000
