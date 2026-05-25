@@ -47,36 +47,16 @@ jobs:
           curl -L https://download.anydesk.com/android/plugins/adcontrol-ad1.apk -o ~/anydesk_apk/adcontrol.apk
           echo "✅ AnyDesk Downloaded!"
 
-      - name: 🖥️ Start Display + Fluxbox + VNC + bore
+      - name: 🖥️ Start Xvfb + Fluxbox (minimal display only)
         run: |
           Xvfb :1 -screen 0 1920x1080x24 &
           export DISPLAY=:1
           sleep 2
-
           fluxbox &
-          sleep 3
-          echo "✅ Display + Fluxbox Ready!"
-
-          x11vnc -display :1 -nopw -forever -shared -bg -o /tmp/x11vnc.log -xkb -capslock -skip_lockkeys
           sleep 2
-          echo "✅ VNC Started!"
+          echo "✅ Xvfb + Fluxbox Ready!"
 
-          curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin
-          chmod +x /usr/local/bin/bore
-
-          bore local 5900 --to bore.pub 2>&1 | tee /tmp/bore.log &
-          sleep 5
-
-          echo "============================================"
-          echo "📱 PHONE PE YEH KARO:"
-          echo "App  : RealVNC / MultiVNC"
-          echo "Host : bore.pub"
-          echo "Port : (neeche dekho)"
-          cat /tmp/bore.log | grep "remote_port\|listening"
-          echo "Pass : koi nahi - seedha connect!"
-          echo "============================================"
-
-      - name: 📱 Android Emulator — Xvfb :1 pe!
+      - name: 📱 Android Emulator — Boot First!
         uses: reactivecircus/android-emulator-runner@v2
         env:
           DISPLAY: :1
@@ -89,14 +69,31 @@ jobs:
           emulator-options: -no-snapshot-save -noaudio -no-boot-anim -gpu swiftshader_indirect -prop qemu.hw.mainkeys=0
           disable-animations: true
           script: |
-            echo "✅ Emulator chal raha hai :1 display pe!"
+            echo "✅ Emulator booted successfully!"
 
+            echo "🔧 Starting VNC + bore..."
+            x11vnc -display :1 -nopw -forever -shared -bg -o /tmp/x11vnc.log -xkb -capslock -skip_lockkeys && sleep 2 && echo "✅ VNC Started!"
+
+            curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin && chmod +x /usr/local/bin/bore && bore local 5900 --to bore.pub 2>&1 | tee /tmp/bore.log & sleep 5 && echo "✅ bore Started!"
+
+            echo "============================================"
+            echo "📱 PHONE PE YEH KARO:"
+            echo "App  : RealVNC / MultiVNC"
+            echo "Host : bore.pub"
+            echo "Port : (neeche dekho)"
+            cat /tmp/bore.log | grep "remote_port\|listening"
+            echo "Pass : koi nahi - seedha connect!"
+            echo "============================================"
+
+            echo "📦 Installing AnyDesk..."
             mkdir -p /tmp/split_apks && unzip -o ~/anydesk_apk/anydesk.apkm -d /tmp/split_apks && adb install-multiple $(find /tmp/split_apks -name '*.apk' | grep -E '(x86_64|x86|base|\.en\.|xxhdpi|xxxhdpi|mdpi)') && echo "✅ AnyDesk Installed!"
 
             adb install ~/anydesk_apk/adcontrol.apk && echo "✅ AnyDesk AD Control Plugin Installed!"
 
+            echo "🔐 Setting AnyDesk permissions..."
             adb shell pm grant com.anydesk.anydeskandroid android.permission.CAMERA && adb shell pm grant com.anydesk.anydeskandroid android.permission.RECORD_AUDIO && adb shell pm grant com.anydesk.anydeskandroid android.permission.READ_EXTERNAL_STORAGE && adb shell pm grant com.anydesk.anydeskandroid android.permission.WRITE_EXTERNAL_STORAGE && adb shell appops set com.anydesk.anydeskandroid SYSTEM_ALERT_WINDOW allow && adb shell appops set com.anydesk.anydeskandroid RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.anydeskandroid RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.anydeskandroid && echo "✅ AnyDesk Permissions Granted!"
 
-            adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android dikhega!"
+            echo "🚀 Launching AnyDesk..."
+            adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android + AnyDesk dikhega!"
 
             sleep 18000
