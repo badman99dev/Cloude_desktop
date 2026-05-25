@@ -88,6 +88,7 @@ jobs:
           heap-size: 2048M
           disk-size: 14G
           emulator-options: -no-snapshot-save -noaudio -no-boot-anim -gpu swiftshader_indirect -prop qemu.hw.mainkeys=0
+          emulator-boot-timeout: 900
           disable-animations: true
           script: |
             echo "✅ Emulator chal raha hai :1 display pe!"
