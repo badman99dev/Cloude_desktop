@@ -75,7 +75,7 @@ jobs:
             echo "✅ Emulator booted successfully!"
 
             echo "🔧 Starting bore..."
-            curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin && chmod +x /usr/local/bin/bore && bore local 5900 --to bore.pub 2>&1 | tee /tmp/bore.log & sleep 5 && echo "✅ bore Started!"
+            curl -Ls https://github.com/ekzhang/bore/releases/download/v0.5.1/bore-v0.5.1-x86_64-unknown-linux-musl.tar.gz | tar zx -C /usr/local/bin && chmod +x /usr/local/bin/bore && bore local 5901 --to bore.pub 2>&1 | tee /tmp/bore.log & sleep 5 && echo "✅ bore Started!"
 
             echo "============================================"
             echo "📱 PHONE PE YEH KARO:"
