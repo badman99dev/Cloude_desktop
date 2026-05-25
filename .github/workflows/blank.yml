@@ -29,7 +29,7 @@ jobs:
       - name: 📦 Install Display + VNC packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y tigervnc-standalone-server fluxbox wmctrl libpulse0 libnss3 libglu1-mesa
+          sudo apt-get install -y tigervnc-standalone-server xfce4 xfce4-terminal xfce4-panel thunar firefox wmctrl libpulse0 libnss3 libglu1-mesa dbus-x11
           echo "✅ Packages installed!"
 
       - name: 💾 Cache AnyDesk APKs
@@ -47,7 +47,7 @@ jobs:
           curl -L https://download.anydesk.com/android/plugins/adcontrol-ad1.apk -o ~/anydesk_apk/adcontrol.apk
           echo "✅ AnyDesk Downloaded!"
 
-      - name: 🖥️ Start Xvnc + Fluxbox
+      - name: 🖥️ Start Xvnc + XFCE
         run: |
           mkdir -p ~/.vnc
           echo "" | vncpasswd -f > ~/.vnc/passwd
@@ -56,12 +56,13 @@ jobs:
           #!/bin/sh
           unset SESSION_MANAGER
           unset DBUS_SESSION_BUS_ADDRESS
-          fluxbox &
+          export XDG_SESSION_DESKTOP=xfce
+          exec startxfce4
           EOF
           chmod +x ~/.vnc/xstartup
           vncserver :1 -geometry 1920x1080 -depth 24 -localhost no &
-          sleep 3
-          echo "✅ Xvnc + Fluxbox Ready!"
+          sleep 5
+          echo "✅ Xvnc + XFCE Ready!"
 
       - name: 📱 Android Emulator — Boot First!
         uses: reactivecircus/android-emulator-runner@v2
