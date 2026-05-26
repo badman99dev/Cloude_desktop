@@ -102,7 +102,7 @@ jobs:
             adb shell sleep 3 && adb shell settings put secure enabled_accessibility_services com.anydesk.adcontrol.ad1/com.anydesk.adcontrol.AccService && adb shell settings put secure accessibility_enabled 1 && adb shell appops set com.anydesk.adcontrol.ad1 RUN_IN_BACKGROUND allow && adb shell appops set com.anydesk.adcontrol.ad1 RUN_ANY_IN_BACKGROUND allow && adb shell dumpsys deviceidle whitelist +com.anydesk.adcontrol.ad1 && echo "✅ AD Control Plugin Permissions + Accessibility Granted!"
 
             echo "🚀 Launching AnyDesk..."
-            adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && echo "📱 Ab phone pe VNC mein Android + AnyDesk dikhega!"
+            adb shell monkey -p com.anydesk.anydeskandroid 1 && sleep 3 && wmctrl -r "Android Emulator" -b add,above && wmctrl -r "qemu" -b add,above && echo "📱 Emulator pinned on top + AnyDesk launched!"
 
             echo "🔄 bore watchdog shuru..."
             while true; do sleep 60; BORE_PID=$(pgrep -f "bore local 5901" | head -1); if [ -z "$BORE_PID" ]; then bore local 5901 --to bore.pub > /tmp/bore.log 2>&1 & sleep 5; BORE_PORT=$(grep -oP 'remote_port=\K\d+' /tmp/bore.log | tail -1); echo "⚠️ bore reconnected! VNC: bore.pub:$BORE_PORT"; else BORE_PORT=$(grep -oP 'remote_port=\K\d+' /tmp/bore.log | tail -1); echo "✅ bore alive | VNC: bore.pub:$BORE_PORT"; fi; done &
